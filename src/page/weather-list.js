@@ -1,11 +1,11 @@
-import router from '../main.js';
-import { weatherData } from '../mock/weather-data.js';
-
 export default class WeatherListPage {
   constructor($root) {
     this.$root = $root;
-    this.weatherData = null; // state
+
+    // state
+    this.weatherData = null;
     this.isLoading = true;
+    this.isError = false;
 
     this.init();
   }
@@ -19,10 +19,12 @@ export default class WeatherListPage {
 
   getTemplate(weatherData) {
     return /*html*/ `
-      <div style="border: 1px solid black;" class="weather_card">
-        <h1>${weatherData.name}</h1>
-        <p>현재: ${weatherData.main.temp} K</p>
-        <p>최저/최고: ${weatherData.main.temp_min} K / ${weatherData.main.temp_max} K</p>
+      <div>
+        <a href="/detail">
+          <h1>${weatherData.name}</h1>
+          <p>현재: ${weatherData.main.temp} °C</p>
+          <p>최저/최고: ${weatherData.main.temp_min} °C / ${weatherData.main.temp_max} °C</p>
+        </a>
       </div>
     `;
   }
@@ -30,24 +32,29 @@ export default class WeatherListPage {
   render() {
     this.$root.innerHTML = this.isLoading
       ? `<p>Loading...</p>` // TODO: skeleton UI 적용
+      : this.isError
+      ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
       : this.getTemplate(this.weatherData);
   }
 
   addEvent() {
-    const $weatherCard = document.querySelector('.weather_card');
-    $weatherCard.addEventListener('click', (e) => {
-      router.navigate('/detail');
-    });
+    //
   }
 
   async fetchWeather() {
-    await sleep(1000); // 비동기 흉내를 위한 delay
-    this.weatherData = weatherData;
-    this.isLoading = false;
-  }
-}
+    try {
+      const result = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=${
+          import.meta.env.VITE_OPEN_WEATHER_API_KEY
+        }&units=metric`
+      );
 
-// TODO: 임시함수, API 연동 후 제거
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
+      const data = await result.json();
+      this.weatherData = data;
+    } catch (err) {
+      this.isError = true;
+    } finally {
+      this.isLoading = false;
+    }
+  }
 }
