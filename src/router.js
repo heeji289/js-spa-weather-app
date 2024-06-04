@@ -17,15 +17,15 @@ export default class Router {
   }
 
   addEvent() {
-    window.addEventListener('popstate', (e) => this.renderPage());
-    window.addEventListener('load', (e) => this.renderPage());
+    window.addEventListener('popstate', () => this.renderPage());
+    window.addEventListener('load', () => this.renderPage());
+    document.addEventListener('DOMContentLoaded', () => this.renderPage());
   }
 
   renderPage() {
     const path = window.location.pathname;
-    const page = this.#routes[path];
-
+    const PageComponent = this.#routes[path];
     const $root = document.querySelector('#app');
-    $root.innerHTML = page;
+    new PageComponent($root);
   }
 }
