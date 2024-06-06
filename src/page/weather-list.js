@@ -1,13 +1,9 @@
-function convertTimestampToTime(timestamp) {
-  const dateObj = new Date(timestamp * 1000);
-  const localString = dateObj.toLocaleString(); // toTimeString(),
-  return localString;
-} // TODO: 위치 옮기기
+import Component from '../shared/component';
+import { convertTimestampToTime } from '../utils';
 
-export default class WeatherListPage {
+export default class WeatherListPage extends Component {
   constructor($root, params) {
-    this.$root = $root;
-    this.$params = params;
+    super($root, params);
 
     // state
     this.weatherData = null;
@@ -24,18 +20,18 @@ export default class WeatherListPage {
     this.addEvent();
   }
 
-  getTemplate(weatherData) {
+  getTemplate() {
     return /*html*/ `
       <div>
         <a href="/weather/Seoul">
-          <h1>${weatherData.name}</h1>
-          <h2>${convertTimestampToTime(weatherData.dt)}</h2>
-          <p>현재: ${weatherData.main.temp} °C</p>
-          <p>최저/최고: ${weatherData.main.temp_min} °C / ${
-      weatherData.main.temp_max
+          <h1>${this.weatherData.name}</h1>
+          <h2>${convertTimestampToTime(this.weatherData.dt)}</h2>
+          <p>현재: ${this.weatherData.main.temp} °C</p>
+          <p>최저/최고: ${this.weatherData.main.temp_min} °C / ${
+      this.weatherData.main.temp_max
     } °C</p>
           <img src="http://openweathermap.org/img/w/${
-            weatherData.weather[0].icon
+            this.weatherData.weather[0].icon
           }.png" />
         </a>
       </div>
@@ -47,11 +43,7 @@ export default class WeatherListPage {
       ? `<p>Loading...</p>` // TODO: skeleton UI 적용
       : this.isError
       ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
-      : this.getTemplate(this.weatherData);
-  }
-
-  addEvent() {
-    //
+      : this.getTemplate();
   }
 
   async fetchWeather() {

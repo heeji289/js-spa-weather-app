@@ -1,19 +1,11 @@
-function convertTimestampToTime(timestamp) {
-  const dateObj = new Date(timestamp * 1000);
-  const localString = dateObj.toLocaleString(); // toTimeString(),
-  return localString;
-} // TODO: 위치 옮기기
+import Component from '../shared/component';
+import { convertTimestampToTime, sleep } from '../utils';
 
-// TODO: 임시함수, API 연동 후 제거
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-export default class WeatherDetailPage {
+export default class WeatherDetailPage extends Component {
   constructor($root, params) {
-    this.$root = $root;
-    this.params = params;
+    super($root, params);
 
+    // state
     this.weatherDataList = [];
     this.isLoading = true;
     this.isError = false;
