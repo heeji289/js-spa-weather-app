@@ -1,6 +1,7 @@
 export default class WeatherDetailPage {
-  constructor($root) {
+  constructor($root, params) {
     this.$root = $root;
+    this.params = params;
     this.render();
   }
 

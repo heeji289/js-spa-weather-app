@@ -1,6 +1,13 @@
+function convertTimestampToTime(timestamp) {
+  const dateObj = new Date(timestamp * 1000);
+  const localString = dateObj.toLocaleString(); // toTimeString(),
+  return localString;
+} // TODO: 위치 옮기기
+
 export default class WeatherListPage {
-  constructor($root) {
+  constructor($root, params) {
     this.$root = $root;
+    this.$params = params;
 
     // state
     this.weatherData = null;
@@ -22,8 +29,14 @@ export default class WeatherListPage {
       <div>
         <a href="/detail">
           <h1>${weatherData.name}</h1>
+          <h2>${convertTimestampToTime(weatherData.dt)}</h2>
           <p>현재: ${weatherData.main.temp} °C</p>
-          <p>최저/최고: ${weatherData.main.temp_min} °C / ${weatherData.main.temp_max} °C</p>
+          <p>최저/최고: ${weatherData.main.temp_min} °C / ${
+      weatherData.main.temp_max
+    } °C</p>
+          <img src="http://openweathermap.org/img/w/${
+            weatherData.weather[0].icon
+          }.png" />
         </a>
       </div>
     `;
