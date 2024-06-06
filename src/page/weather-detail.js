@@ -1,5 +1,5 @@
 import Component from '../shared/component';
-import { convertTimestampToTime, sleep } from '../utils';
+import { convertTimestampToTime, sleep } from '../util';
 
 export default class WeatherDetailPage extends Component {
   constructor($root, params) {
