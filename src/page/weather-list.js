@@ -1,6 +1,6 @@
 import WeatherService from '../api/weather';
+import WeatherInfoCard from '../component/weather-info-card';
 import Component from '../shared/component';
-import { convertTimestampToTime } from '../util';
 
 export default class WeatherListPage extends Component {
   constructor($root, params) {
@@ -23,18 +23,8 @@ export default class WeatherListPage extends Component {
 
   getTemplate() {
     return /*html*/ `
-      <div>
-        <a href="/weather/Seoul">
-          <h1>${this.weatherData.name}</h1>
-          <h2>${convertTimestampToTime(this.weatherData.dt)}</h2>
-          <p>현재: ${this.weatherData.main.temp} °C</p>
-          <p>최저/최고: ${this.weatherData.main.temp_min} °C / ${
-      this.weatherData.main.temp_max
-    } °C</p>
-          <img src="http://openweathermap.org/img/w/${
-            this.weatherData.weather[0].icon
-          }.png" />
-        </a>
+      <div class="weather_list_page">
+        <a href="/weather/Seoul"></a>
       </div>
     `;
   }
@@ -45,6 +35,16 @@ export default class WeatherListPage extends Component {
       : this.isError
       ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
       : this.getTemplate();
+
+    if (this.isLoading || this.isError) {
+      return;
+    }
+
+    const $container = document.querySelector('.weather_list_page a');
+    new WeatherInfoCard($container, null, { weatherData: this.weatherData });
+    const $child = document.createElement('h1');
+    $child.innerHTML = 'Seoul';
+    $container.prepend($child);
   }
 
   async fetchWeather() {

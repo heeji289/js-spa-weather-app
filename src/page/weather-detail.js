@@ -1,4 +1,5 @@
 import WeatherService from '../api/weather';
+import WeatherInfoCard from '../component/weather-info-card';
 import Component from '../shared/component';
 import { convertTimestampToTime } from '../util';
 
@@ -21,22 +22,9 @@ export default class WeatherDetailPage extends Component {
   }
 
   getTemplate() {
-    const WeatherCard = (weatherData) => /*html*/ `
-      <h2>${convertTimestampToTime(weatherData.dt)}</h2>
-      <p>현재: ${weatherData.main.temp} °C</p>
-      <p>최저/최고: ${weatherData.main.temp_min} °C / ${
-      weatherData.main.temp_max
-    } °C</p>
-      <img src="http://openweathermap.org/img/w/${
-        weatherData.weather[0].icon
-      }.png" />
-    `;
-
     return /*html*/ `
       <h1>Weather Detail</h1>
-      ${this.weatherDataList
-        .map((data) => `<div>${WeatherCard(data)}</div>`)
-        .join('')}
+      <div class="container"></div>
     `;
   }
 
@@ -46,6 +34,24 @@ export default class WeatherDetailPage extends Component {
       : this.isError
       ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
       : this.getTemplate();
+
+    if (this.isLoading || this.isError) {
+      return;
+    }
+
+    const $container = document.querySelector('.container');
+
+    this.weatherDataList.forEach((data) => {
+      const $parent = document.createElement('div');
+
+      $container.appendChild($parent);
+      new WeatherInfoCard($parent, null, {
+        weatherData: data,
+      });
+      const $child = document.createElement('h2');
+      $child.innerHTML = convertTimestampToTime(data.dt);
+      $parent.prepend($child);
+    });
   }
 
   async fetchData() {
