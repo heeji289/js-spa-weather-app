@@ -13,9 +13,19 @@ export default class WeatherInfoCard extends Component {
 
   render() {
     this.$root.innerHTML = /*html*/ `
-      <img src="http://openweathermap.org/img/w/${this.props.weatherData.weather[0].icon}.png" />
-      <p>현재: ${this.props.weatherData.main.temp} °C</p>
-      <p>최저/최고: ${this.props.weatherData.main.temp_min} °C / ${this.props.weatherData.main.temp_max} °C</p>
+      <div class="d-flex align-items-center">
+        <img src="http://openweathermap.org/img/w/${this.props.weatherData.weather[0].icon}.png" />
+        <div class="d-flex flex-column justify-content-between gap-1">
+          <p>
+            <p class="fw-semibold">현재</p>
+            <p>${this.props.weatherData.main.temp} °C</p>
+          </p>
+          <p>
+            <p class="fw-semibold">최저/최고</p>
+            <p>${this.props.weatherData.main.temp_min} °C / ${this.props.weatherData.main.temp_max} °C</p>
+          </p>
+        </div>
+      </div>
     `;
   }
 }

@@ -1,6 +1,7 @@
 import Router from './router.js';
 import WeatherListPage from './page/weather-list.js';
 import WeatherDetailPage from './page/weather-detail.js';
+import './reset.css';
 
 const routes = {
   '/weather': WeatherListPage,

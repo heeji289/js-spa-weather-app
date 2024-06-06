@@ -1,6 +1,7 @@
 import WeatherService from '../api/weather';
 import WeatherInfoCard from '../component/weather-info-card';
 import Component from '../shared/component';
+import { convertTimestampToTime } from '../util';
 
 export default class WeatherListPage extends Component {
   constructor($root, params) {
@@ -23,8 +24,8 @@ export default class WeatherListPage extends Component {
 
   getTemplate() {
     return /*html*/ `
-      <div class="weather_list_page">
-        <a href="/weather/Seoul"></a>
+      <div class="weather_list_page d-grid gap-4 border" style="width: 350px">
+        <a href="/weather/Seoul" style="color: inherit; text-decoration: none;"></a>
       </div>
     `;
   }
@@ -42,9 +43,16 @@ export default class WeatherListPage extends Component {
 
     const $container = document.querySelector('.weather_list_page a');
     new WeatherInfoCard($container, null, { weatherData: this.weatherData });
-    const $child = document.createElement('h1');
-    $child.innerHTML = 'Seoul';
-    $container.prepend($child);
+
+    const $cityName = document.createElement('h2');
+    $cityName.setAttribute('class', 'display-2 fw-bold');
+    $cityName.innerText = 'Seoul';
+    const $time = document.createElement('h3');
+    $time.setAttribute('class', 'display-6 fw-semibold');
+    $time.innerText = convertTimestampToTime(this.weatherData.dt);
+
+    $container.prepend($time);
+    $container.prepend($cityName);
   }
 
   async fetchWeather() {
