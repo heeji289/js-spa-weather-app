@@ -27,7 +27,7 @@ export default class WeatherListPage {
   getTemplate(weatherData) {
     return /*html*/ `
       <div>
-        <a href="/detail">
+        <a href="/weather/Seoul">
           <h1>${weatherData.name}</h1>
           <h2>${convertTimestampToTime(weatherData.dt)}</h2>
           <p>현재: ${weatherData.main.temp} °C</p>
