@@ -1,5 +1,6 @@
+import WeatherService from '../api/weather';
 import Component from '../shared/component';
-import { convertTimestampToTime, sleep } from '../util';
+import { convertTimestampToTime } from '../util';
 
 export default class WeatherDetailPage extends Component {
   constructor($root, params) {
@@ -49,15 +50,8 @@ export default class WeatherDetailPage extends Component {
 
   async fetchData() {
     try {
-      const result = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=Seoul&appid=${
-          import.meta.env.VITE_OPEN_WEATHER_API_KEY
-        }&units=metric`
-      );
-      await sleep(1000);
-
-      const data = await result.json();
-      this.weatherDataList = data.list;
+      const result = await WeatherService.getWeatherForecasts('Seoul');
+      this.weatherDataList = result;
     } catch (err) {
       this.isError = true;
     } finally {

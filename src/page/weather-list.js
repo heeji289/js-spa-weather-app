@@ -1,3 +1,4 @@
+import WeatherService from '../api/weather';
 import Component from '../shared/component';
 import { convertTimestampToTime } from '../util';
 
@@ -48,14 +49,8 @@ export default class WeatherListPage extends Component {
 
   async fetchWeather() {
     try {
-      const result = await fetch(
-        `https://api.openweathermap.org/data/2.5/weather?q=Seoul&appid=${
-          import.meta.env.VITE_OPEN_WEATHER_API_KEY
-        }&units=metric`
-      );
-
-      const data = await result.json();
-      this.weatherData = data;
+      const result = await WeatherService.getCurrentWeather('Seoul');
+      this.weatherData = result;
     } catch (err) {
       this.isError = true;
     } finally {
