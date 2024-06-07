@@ -1,11 +1,6 @@
 const PATH_PARAMETER_REGEXP = /:\w+/g; // TODO: 위치 변경
 
 export default class Router {
-  /**
-   * routes 정보
-   * navigateTo
-   * URL 감지 이벤트 추가
-   */
   #routes;
 
   constructor(routes) {
