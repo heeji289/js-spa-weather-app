@@ -34,7 +34,12 @@ export default class WeatherListPage extends Component {
     this.$root.innerHTML = this.isLoading
       ? `<p>Loading...</p>` // TODO: skeleton UI 적용
       : this.isError
-      ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
+      ? /*html*/ `
+        <p>
+          <p>에러가 발생했습니다!</p>
+          <button class="retry_button">재시도 🔄</button>
+        </p>
+      `
       : this.getTemplate();
 
     if (this.isLoading || this.isError) {
@@ -53,6 +58,19 @@ export default class WeatherListPage extends Component {
 
     $container.prepend($time);
     $container.prepend($cityName);
+  }
+
+  addEvent() {
+    if (this.isError) {
+      const $retryButton = document.querySelector('.retry_button');
+      $retryButton.addEventListener('click', async (e) => {
+        this.isLoading = true;
+
+        this.render();
+        await this.fetchWeather();
+        this.render();
+      });
+    }
   }
 
   async fetchWeather() {
