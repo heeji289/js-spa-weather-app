@@ -1,6 +1,7 @@
-import WeatherService from '../api/weather';
+import weatherService from '../api/weather';
 import WeatherInfoCard from '../component/weather-info-card';
 import Component from '../shared/component';
+import { createElement } from '../util';
 
 export default class WeatherDetailPage extends Component {
   constructor($root, params) {
@@ -28,59 +29,70 @@ export default class WeatherDetailPage extends Component {
   }
 
   render() {
-    this.$root.innerHTML = this.isLoading
-      ? `<p>Loading...</p>` // TODO: skeleton UI 적용
-      : this.isError
-      ? `<p>Error...!</p>` // TODO: 재시도 버튼 추가
-      : this.getTemplate();
-
-    if (this.isLoading || this.isError) {
+    if (this.isLoading) {
+      this.$root.innerHTML = '<p>Loading...</p>';
       return;
     }
+
+    if (this.isError) {
+      this.$root.innerHTML = '<p>Error...!</p>';
+      return;
+    }
+
+    this.$root.innerHTML = this.getTemplate();
 
     const $container = document.querySelector('main');
     $container.setAttribute('class', 'd-grid gap-4');
     $container.setAttribute('style', 'width: 350px');
 
-    Object.entries(this.weatherDataList).map(([date, forecastList]) => {
-      const $dateContainer = document.createElement('div');
+    Object.entries(this.weatherDataList).map(([date, forecastList]) =>
+      this.renderForecastPerDate(date, forecastList)
+    );
+  }
 
-      const $todayDate = document.createElement('h3');
-      $todayDate.innerText = date;
-      $todayDate.setAttribute('class', 'display-3 fw-semibold');
+  renderForecastPerDate(date, forecastList) {
+    const $container = document.querySelector('main');
 
-      const $forecastListContainer = document.createElement('div');
-      $forecastListContainer.setAttribute('class', 'd-grid gap-4');
+    const $dateContainer = createElement('div');
 
-      forecastList.map((forecast) => {
-        const $forecastCard = document.createElement('div');
-        $forecastCard.setAttribute('class', 'border p-2');
-
-        new WeatherInfoCard($forecastCard, null, { weatherData: forecast });
-        const $time = document.createElement('h3');
-        $time.setAttribute('class', 'display-6 fw-semibold');
-        $time.innerText = forecast.dt_txt
-          .split(' ')[1]
-          .split(':')
-          .slice(0, 2)
-          .join(':');
-
-        $forecastCard.prepend($time);
-
-        $forecastListContainer.appendChild($forecastCard);
-      });
-
-      $dateContainer.appendChild($todayDate);
-      $dateContainer.appendChild($forecastListContainer);
-
-      $container.appendChild($dateContainer);
+    const $todayDate = createElement('h3', {
+      class: 'display-3 fw-semibold',
     });
+    $todayDate.innerText = date;
+
+    const $forecastListContainer = createElement('div', {
+      class: 'd-grid gap-4',
+    });
+
+    forecastList.map((forecast) =>
+      this.renderForecastItem($forecastListContainer, forecast)
+    );
+
+    $dateContainer.appendChild($todayDate);
+    $dateContainer.appendChild($forecastListContainer);
+
+    $container.appendChild($dateContainer);
+  }
+
+  renderForecastItem($parent, forecast) {
+    const $forecastCard = createElement('div', {
+      class: 'border p-2',
+    });
+
+    const time = forecast.dt_txt.split(' ')[1].split(':').slice(0, 2).join(':');
+
+    new WeatherInfoCard($forecastCard, null, {
+      weatherData: forecast,
+      title: time,
+    });
+
+    $parent.appendChild($forecastCard);
   }
 
   async fetchData() {
     try {
-      const result = await WeatherService.getWeatherForecasts('Seoul');
-      const grouped = this.groupWeatherDataByDate(result);
+      const result = await weatherService.getWeatherForecasts(this.params.name);
+      const grouped = this.groupWeatherDataByDate(result.list);
       this.weatherDataList = grouped;
     } catch (err) {
       this.isError = true;

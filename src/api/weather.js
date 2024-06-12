@@ -1,37 +1,17 @@
-const WeatherService = {
-  API_URL: 'https://api.openweathermap.org/data/2.5',
-  commonParam: {
-    appid: import.meta.env.VITE_OPEN_WEATHER_API_KEY,
-    units: 'metric',
-  },
+import ApiService from './api-service';
 
-  getCurrentWeather: async function (cityname) {
-    const params = {
-      ...this.commonParam,
-      q: cityname,
-    };
+class WeatherService extends ApiService {
+  async getCurrentWeather(cityname) {
+    const result = await this.get('weather', { q: cityname });
+    return result;
+  }
 
-    const result = await fetch(
-      `${this.API_URL}/weather?${new URLSearchParams(params)}`
-    );
+  async getWeatherForecasts(cityname) {
+    const result = await this.get('forecast', { q: cityname });
+    return result;
+  }
+}
 
-    const data = await result.json();
-    return data;
-  },
+const weatherService = new WeatherService();
 
-  getWeatherForecasts: async function (cityname) {
-    const params = {
-      ...this.commonParam,
-      q: cityname,
-    };
-
-    const result = await fetch(
-      `${this.API_URL}/forecast?${new URLSearchParams(params)}`
-    );
-
-    const data = await result.json();
-    return data.list;
-  },
-};
-
-export default WeatherService;
+export default weatherService;

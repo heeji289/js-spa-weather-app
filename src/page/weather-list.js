@@ -1,7 +1,7 @@
-import WeatherService from '../api/weather';
+import weatherService from '../api/weather';
 import WeatherInfoCard from '../component/weather-info-card';
 import Component from '../shared/component';
-import { convertTimestampToTime } from '../util';
+import { convertTimestampToTime, createElement } from '../util';
 
 export default class WeatherListPage extends Component {
   constructor($root, params) {
@@ -31,29 +31,34 @@ export default class WeatherListPage extends Component {
   }
 
   render() {
-    this.$root.innerHTML = this.isLoading
-      ? `<p>Loading...</p>` // TODO: skeleton UI 적용
-      : this.isError
-      ? /*html*/ `
-        <p>
-          <p>에러가 발생했습니다!</p>
-          <button class="retry_button">재시도 🔄</button>
-        </p>
-      `
-      : this.getTemplate();
-
-    if (this.isLoading || this.isError) {
+    if (this.isLoading) {
+      this.$root.innerHTML = '<p>Loading..</p>';
       return;
     }
+
+    if (this.isError) {
+      this.$root.innerHTML = /*html*/ `
+        <div>
+          <p>에러가 발생했습니다!</p>
+          <button class="retry_button">재시도 🔄</button>
+        </div>
+      `;
+      return;
+    }
+
+    this.$root.innerHTML = this.getTemplate();
 
     const $container = document.querySelector('.weather_list_page a');
     new WeatherInfoCard($container, null, { weatherData: this.weatherData });
 
-    const $cityName = document.createElement('h2');
-    $cityName.setAttribute('class', 'display-2 fw-bold');
+    const $cityName = createElement('h2', {
+      class: 'display-2 fw-bold',
+    });
     $cityName.innerText = 'Seoul';
-    const $time = document.createElement('h3');
-    $time.setAttribute('class', 'display-6 fw-semibold');
+
+    const $time = createElement('h3', {
+      class: 'display-6 fw-semibold',
+    });
     $time.innerText = convertTimestampToTime(this.weatherData.dt);
 
     $container.prepend($time);
@@ -75,7 +80,7 @@ export default class WeatherListPage extends Component {
 
   async fetchWeather() {
     try {
-      const result = await WeatherService.getCurrentWeather('Seoul');
+      const result = await weatherService.getCurrentWeather(this.params.name);
       this.weatherData = result;
     } catch (err) {
       this.isError = true;
